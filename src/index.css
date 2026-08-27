@@ -14,7 +14,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   background-color: #162325;
-  background-image: 
+  background-image:
     radial-gradient(ellipse 80% 60% at 50% -20%, rgba(222, 68, 59, 0.3), transparent),
     radial-gradient(ellipse 60% 50% at 100% 25%, rgba(0, 107, 180, 0.25), transparent),
     radial-gradient(ellipse 70% 50% at 0% 75%, rgba(222, 68, 59, 0.2), transparent),
@@ -85,7 +85,11 @@ label {
 
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+input[type="number"],
+input[type="datetime-local"],
+input[type="time"],
+select {
   width: 100%;
   background: rgba(30, 41, 59, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -101,10 +105,33 @@ input[type="password"] {
 
 input[type="text"]:focus,
 input[type="email"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="datetime-local"]:focus,
+input[type="time"]:focus,
+select:focus {
   border-color: #a855f7;
   background: rgba(30, 41, 59, 0.55);
   box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+}
+
+/* Ajustes de color para inputs de fecha y hora en tema oscuro */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.95;
+}
+
+select option {
+  background: #1e293b;
+  color: #ffffff;
 }
 
 /* Botón Principal (Submit) */
@@ -165,5 +192,374 @@ button:not([type="submit"]):hover {
 }
 
 button:not([type="submit"]):active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Fila de Inputs para formularios */
+.fila-inputs {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.fila-inputs>div {
+  flex: 1;
+}
+
+/* Botones de navegación superior o cabecera interna */
+.contenedor-botones-cabecera {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.contenedor-botones-cabecera button {
+  margin-top: 0;
+  padding: 0.65rem 1.2rem;
+  font-size: 0.875rem;
+  flex: 1;
+}
+
+/* --- LISTADO DE GASTOS --- */
+.lista-gastos-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* Item individual de gasto (Diseño Glassmorphic y Limpio) */
+.gasto-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.1rem;
+  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.gasto-item:hover {
+  transform: translateY(-2px);
+  background: rgba(30, 41, 59, 0.55);
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25), 0 0 12px rgba(168, 85, 247, 0.08);
+}
+
+/* Bloque izquierdo del item */
+.gasto-info-principal {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex: 1;
+  min-width: 0;
+  /* Permite truncamiento correcto */
+}
+
+/* Contenedor del concepto y la fecha */
+.gasto-concepto-y-fecha {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gasto-concepto {
+  font-weight: 600;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gasto-fecha {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.2rem;
+}
+
+/* Bloque derecho (Monto + Acciones) */
+.gasto-monto-y-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-shrink: 0;
+}
+
+.gasto-monto {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #f43f5e;
+  /* Rojo coral para indicar un gasto */
+  font-feature-settings: "tnum" 1;
+  /* Números monoespaciados para alineación limpia */
+}
+
+/* Contenedor de botones editar / borrar */
+.gasto-acciones {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* Botones de acción minimalistas */
+.btn-accion {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(30, 41, 59, 0.4);
+  color: #94a3b8;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin: 0 !important;
+  /* Quitar cualquier margen heredado */
+  padding: 0 !important;
+  touch-action: manipulation;
+}
+
+.btn-accion svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.btn-accion:hover {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #e9d5ff;
+  transform: scale(1.05);
+}
+
+.btn-accion.btn-borrar:hover {
+  background: rgba(244, 63, 94, 0.15);
+  border-color: rgba(244, 63, 94, 0.4);
+  color: #fca5a5;
+}
+
+.btn-accion:active {
+  transform: scale(0.95);
+}
+
+/* --- ETIQUETAS DE CATEGORÍA --- */
+.gasto-categoria-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* Categorías específicas con su paleta de colores curada */
+.tag-comida {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.tag-transporte {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+}
+
+.tag-hogar {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.tag-diversion {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #c084fc;
+}
+
+.tag-compras {
+  background: rgba(236, 72, 153, 0.15);
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  color: #f472b6;
+}
+
+.tag-salud {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.tag-otros {
+  background: rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #cbd5e1;
+}
+
+/* Estilo para cuando no hay gastos en la lista */
+.lista-vacia {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: #64748b;
+  font-size: 0.95rem;
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.15);
+  margin-top: 1.5rem;
+}
+
+/* Estilos específicos para el componente ListaGastos */
+
+.contenedor-gastos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Título */
+.contenedor-gastos h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.75rem;
+}
+
+/* Contenedor del botón Categorías */
+.contenedor-gastos>div:first-of-type {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: -0.5rem;
+}
+
+/* Botón Categorías */
+.contenedor-gastos button:not([type="submit"]) {
+  width: auto;
+  min-width: 140px;
+  margin-top: 0;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
+}
+
+/* Formulario */
+.contenedor-gastos form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+/* Inputs directos en el formulario (Fecha y Hora) */
+.contenedor-gastos form>input[type="datetime-local"],
+.contenedor-gastos form>input[type="time"] {
+  width: 100%;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  color: #ffffff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.contenedor-gastos form>input[type="datetime-local"]:focus,
+.contenedor-gastos form>input[type="time"]:focus {
+  border-color: #a855f7;
+  background: rgba(30, 41, 59, 0.55);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+}
+
+/* Personalización del icono de calendario y reloj en modo oscuro */
+.contenedor-gastos form>input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.contenedor-gastos form>input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+
+.contenedor-gastos form>input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+.contenedor-gastos form>input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.95;
+}
+
+/* Contenedores de inputs agrupados (Cantidad y Concepto) */
+.contenedor-gastos form div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contenedor-gastos form div label {
+  color: #cbd5e1;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.contenedor-gastos form div input[type="number"],
+.contenedor-gastos form div input[type="text"] {
+  width: 100%;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  color: #ffffff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.contenedor-gastos form div input[type="number"]:focus,
+.contenedor-gastos form div input[type="text"]:focus {
+  border-color: #a855f7;
+  background: rgba(30, 41, 59, 0.55);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+}
+
+/* Botón Agregar Gasto */
+.contenedor-gastos form button {
+  background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.contenedor-gastos form button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(168, 85, 247, 0.35);
+  background: linear-gradient(135deg, #b55fe6 0%, #4b92ff 100%);
+}
+
+.contenedor-gastos form button:active {
   transform: translateY(1px) scale(0.98);
 }

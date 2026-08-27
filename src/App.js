@@ -1,14 +1,41 @@
 import Contenedor from "./Elementos/Contenedor";
 import { Helmet } from "react-helmet";
+import { useState } from 'react'
 import styled from "styled-components";
 import { Routes, Route, NavLink } from "react-router";
 import InicioSesion from "./Componentes/InicioSesion";
 import Registro from "./Componentes/Registro";
 import ListaGastos from "./Componentes/ListaGastos";
 import EditarGasto from "./Componentes/EditarGasto";
+import CategoriaGastos from "./Componentes/CategoriaGastos";
 import Logo from "./Imagenes/icono.svg"
+//para sacar elementos de la base de datos
+import { collection, onSnapshot } from "firebase/firestore";
+import db from "./firebase/firebaseConfig";
+import { useEffect } from 'react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
 
 const App = () => {
+
+  const [usuarios, setUsuarios] = useState([]);
+
+  useEffect(() => {
+    onSnapshot(collection(db, 'usuarios'),
+      (snapshot) => {
+
+        const arreglo = snapshot.docs.map((amigo) => {
+          return (
+            { ...amigo.data(), id: amigo.id }
+          );
+
+        });
+        setUsuarios(arreglo);
+
+      })
+  }, []);
+
+
   return (
     <>
       <Helmet>
@@ -18,10 +45,14 @@ const App = () => {
       <ContenedorGeneral>
         <Encabezado>
           <nav>
-            <NavLink to="/">Lista de Gastos</NavLink>
-            <NavLink to="/inicio-sesion">Iniciar Sesión</NavLink>
-            <NavLink to="/registro">Registro</NavLink>
-            <NavLink to="/editar">Editar Gasto</NavLink>
+            <NavLink to="/inicio-sesion">
+              {
+                usuarios.map((usuario) => (
+
+                  <p key={usuario.id}><FontAwesomeIcon icon={faCircleUser} />{usuario.nombre}</p>
+                ))
+              }
+            </NavLink>
           </nav>
         </Encabezado>
 
@@ -32,6 +63,7 @@ const App = () => {
               <Route path="/inicio-sesion" element={<InicioSesion />} />
               <Route path="/registro" element={<Registro />} />
               <Route path="/editar/:id" element={<EditarGasto />} />
+              <Route path="/categoria" element={<CategoriaGastos />} />
             </Routes>
           </div>
         </Contenedor>
@@ -63,6 +95,7 @@ const Encabezado = styled.header`
 
   nav {
     display: flex;
+    justify-content: flex-end;
     gap: 0.5rem;
     align-items: center;
     max-width: 550px;
@@ -89,6 +122,9 @@ const Encabezado = styled.header`
       transition: all 0.2s ease;
       touch-action: manipulation;
       border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
 
       &:hover {
         color: #f8fafc;
@@ -100,6 +136,13 @@ const Encabezado = styled.header`
         background-color: rgba(168, 85, 247, 0.18);
         border: 1px solid rgba(168, 85, 247, 0.35);
         font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
       }
     }
   }
