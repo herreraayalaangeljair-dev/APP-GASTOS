@@ -18,12 +18,25 @@ const ListaGastos = () => {
                 <Input type="datetime-local" />
 
                 <InputContenedor>
-                    <Label htmlFor="cantidad">Cantidad</Label>
-                    <Input type="number" id="cantidad" placeholder="Cantidad" />
+                    <Label htmlFor="concepto">Concepto</Label>
+                    <Input type="text" id="concepto" placeholder="Concepto" />
+                </InputContenedor>
+                <InputContenedor>
+                    <Label htmlFor="categoria">Categoria</Label>
+                    <select id="categoria" name="categoria">
+                        <option value="" disabled selected>Selecciona una categoria</option>
+                        <option value="hogar">Hogar</option>
+                        <option value="transporte">Transporte</option>
+                        <option value="comida">Comida</option>
+                        <option value="servicios">Servicios</option>
+                        <option value="ocio">Ocio</option>
+                        <option value="otros">Otros</option>
+                    </select>
                 </InputContenedor>
 
                 <InputContenedor>
-                    <Input type="text" placeholder="Concepto" />
+                    <Label htmlFor="cantidad">Cantidad</Label>
+                    <Input type="number" id="cantidad" placeholder="Cantidad" />
                 </InputContenedor>
 
                 <Boton primario type="submit">Agregar gasto</Boton>
