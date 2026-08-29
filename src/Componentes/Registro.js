@@ -11,6 +11,7 @@ import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { Helmet } from 'react-helmet-async';
 import { auth } from '../firebase/firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import Alertas from './Alertas';
 
 
 const Registro = () => {
@@ -20,6 +21,8 @@ const Registro = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [nombre, setNombre] = useState('');
+    const [estadoAlerta, cambiarEstadoAlerta] = useState(false);
+
 
     //functions de envio de formulario
     const handleSubmit = async (e) => {
