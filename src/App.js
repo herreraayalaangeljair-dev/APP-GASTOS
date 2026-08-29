@@ -1,5 +1,5 @@
 import Contenedor from "./Elementos/Contenedor";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { useState } from 'react'
 import styled from "styled-components";
 import { Routes, Route, NavLink } from "react-router";
@@ -11,7 +11,7 @@ import CategoriaGastos from "./Componentes/CategoriaGastos";
 import Logo from "./Imagenes/icono.svg"
 //para sacar elementos de la base de datos
 import { collection, onSnapshot } from "firebase/firestore";
-import db from "./firebase/firebaseConfig";
+import { db } from "./firebase/firebaseConfig";
 import { useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleUser } from "@fortawesome/free-solid-svg-icons";

@@ -11,14 +11,17 @@ const ListaGastos = () => {
             <h1>Lista de gastos</h1>
 
             <div>
-                <Boton onClick={() => { navigate('./categorias') }}>Categorias</Boton>
+                <Boton onClick={() => { navigate('./categorias') }}>Ver mis gastos</Boton>
             </div>
 
             <Formulario onSubmit={(e) => e.preventDefault()}>
-                <Input type="datetime-local" />
+                <InputContenedor>
+                    <Label htmlFor="fecha">Fecha de gasto: </Label>
+                    <Input type="datetime-local" />
+                </InputContenedor>
 
                 <InputContenedor>
-                    <Label htmlFor="concepto">Concepto</Label>
+                    <Label htmlFor="concepto">Concepto: </Label>
                     <Input type="text" id="concepto" placeholder="Concepto" />
                 </InputContenedor>
                 <InputContenedor>
