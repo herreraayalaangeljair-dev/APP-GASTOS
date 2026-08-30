@@ -14,6 +14,13 @@ const SideBarMenu = ({ cerrarMenu }) => {
                     <FontAwesomeIcon icon={faXmark} />
                 </BotonCerrar>
 
+                <Titulo>Ir a</Titulo>
+                <Opcion>Inicio</Opcion>
+                <Opcion>Lista de gastos</Opcion>
+
+
+                <Separador />
+
                 <Titulo>Gastos por categoría</Titulo>
                 <Opcion>Hogar</Opcion>
                 <Opcion>Transporte</Opcion>
