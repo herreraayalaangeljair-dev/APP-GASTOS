@@ -1,7 +1,19 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 
 const Alertas = ({ tipo, mensaje, estadoAlerta, cambiarEstadoAlerta }) => {
+
+    useEffect(() => {
+        let temporizador;
+        if (estadoAlerta === true) {
+            temporizador = setTimeout(() => {
+                cambiarEstadoAlerta(false);
+            }, 3000);
+        }
+        return () => clearTimeout(temporizador);
+    }, [estadoAlerta, cambiarEstadoAlerta]);
+
+
     return (
         <> {estadoAlerta &&
             <ContenedorAlerta tipo={tipo}>

@@ -24,9 +24,9 @@ const App = () => {
     onSnapshot(collection(db, 'usuarios'),
       (snapshot) => {
 
-        const arreglo = snapshot.docs.map((amigo) => {
+        const arreglo = snapshot.docs.map((usuario) => {
           return (
-            { ...amigo.data(), id: amigo.id }
+            { ...usuario.data(), id: usuario.id }
           );
 
         });
