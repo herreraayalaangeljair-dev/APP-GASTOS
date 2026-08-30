@@ -9,7 +9,7 @@ import ListaGastos from "./Componentes/ListaGastos";
 import EditarGasto from "./Componentes/EditarGasto";
 import CategoriaGastos from "./Componentes/CategoriaGastos";
 import Logo from "./Imagenes/icono.svg"
-
+import SidebarMenu from "./Componentes/SideBarMenu";
 //para sacar elementos de la base de datos
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase/firebaseConfig";
@@ -72,7 +72,11 @@ const App = () => {
             </nav>
 
           </ContenedorNav>
+
         </Encabezado>
+
+        {/*para mostrar el menu lateral*/}
+        {menuAbierto && <SidebarMenu cerrarMenu={() => setMenuAbierto(false)} />}
 
         <Contenedor>
           <div className="listado-gastos">
@@ -214,9 +218,6 @@ const MenuHambirguesa = styled.div`
     display: block;
   }
 `;
-
-
-
 
 
 export default App;
