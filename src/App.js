@@ -9,16 +9,19 @@ import ListaGastos from "./Componentes/ListaGastos";
 import EditarGasto from "./Componentes/EditarGasto";
 import CategoriaGastos from "./Componentes/CategoriaGastos";
 import Logo from "./Imagenes/icono.svg"
+
 //para sacar elementos de la base de datos
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase/firebaseConfig";
 import { useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
+import { faCircleUser, faBars } from "@fortawesome/free-solid-svg-icons";
 
 const App = () => {
 
   const [usuarios, setUsuarios] = useState([]);
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
 
   useEffect(() => {
     onSnapshot(collection(db, 'usuarios'),
@@ -44,16 +47,31 @@ const App = () => {
 
       <ContenedorGeneral>
         <Encabezado>
-          <nav>
-            <NavLink to="/inicio-sesion">
-              {
-                usuarios.map((usuario) => (
+          <ContenedorNav>
 
-                  <p key={usuario.id}><FontAwesomeIcon icon={faCircleUser} />{usuario.nombre}</p>
-                ))
-              }
-            </NavLink>
-          </nav>
+            <MenuHambirguesa
+              aria-label="Menú"
+              aria-expanded={menuAbierto}
+              aria-controls="menu-principal"
+              onClick={() => setMenuAbierto(!menuAbierto)}
+            >
+              <FontAwesomeIcon icon={faBars} />
+            </MenuHambirguesa>
+
+            <nav>
+              <NavLink to="/inicio-sesion">
+                {
+                  usuarios.map((usuario) => (
+                    <p key={usuario.id}>
+                      <FontAwesomeIcon icon={faCircleUser} />
+                      {usuario.nombre}
+                    </p>
+                  ))
+                }
+              </NavLink>
+            </nav>
+
+          </ContenedorNav>
         </Encabezado>
 
         <Contenedor>
@@ -83,69 +101,122 @@ const ContenedorGeneral = styled.div`
 `;
 
 const Encabezado = styled.header`
-  background: rgba(9, 13, 22, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 18, 0.95) 0%,
+    rgba(10, 10, 18, 0.85) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+  padding: 0.75rem clamp(1rem, 4vw, 2rem);
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: max(0.6rem, env(safe-area-inset-top)) 0.75rem 0.6rem;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+`;
+
+const ContenedorNav = styled.div`
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 
   nav {
     display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
     align-items: center;
-    max-width: 550px;
-    margin: 0 auto;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    padding: 0.25rem 0.25rem;
+    gap: 0.25rem;
 
     a {
-      color: #94a3b8;
+      color: rgba(255, 255, 255, 0.7);
       text-decoration: none;
-      font-weight: 500;
       font-size: 0.875rem;
-      padding: 0.5rem 0.875rem;
-      border-radius: 9999px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: all 0.2s ease;
-      touch-action: manipulation;
-      border: 1px solid transparent;
-      display: inline-flex;
+      font-weight: 500;
+      padding: 0.45rem 0.85rem;
+      display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.45rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
 
       &:hover {
-        color: #f8fafc;
-        background-color: rgba(255, 255, 255, 0.06);
+        color: #ffffff;
+        background-color: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.1);
       }
 
       &.active {
-        color: #e9d5ff;
-        background-color: rgba(168, 85, 247, 0.18);
-        border: 1px solid rgba(168, 85, 247, 0.35);
+        color: #c4b5fd;
+        background-color: rgba(139, 92, 246, 0.15);
+        border-color: rgba(139, 92, 246, 0.3);
         font-weight: 600;
+      }
+
+      &:focus-visible {
+        outline: 2px solid #8b5cf6;
+        outline-offset: 2px;
       }
 
       p {
         margin: 0;
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        gap: 0.375rem;
+        gap: 0.4rem;
+      }
+
+      svg {
+        font-size: 1rem;
+        opacity: 0.85;
       }
     }
   }
 `;
+
+const MenuHambirguesa = styled.div`
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.75);
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  margin-right: auto;
+ 
+  &:hover {
+    color: #ffffff;
+    background-color: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.35);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #8b5cf6;
+    outline-offset: 2px;
+  }
+
+  svg {
+    width: 1.4rem;   
+    height: 1.4rem;
+    display: block;
+  }
+`;
+
+
+
+
 
 export default App;
