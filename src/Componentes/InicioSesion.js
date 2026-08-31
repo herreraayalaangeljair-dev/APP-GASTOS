@@ -1,9 +1,8 @@
-import React from 'react';
+import { auth } from '../firebase/firebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import Alertas from './Alertas';
 import { useNavigate } from "react-router";
-import { useState, useEffect } from 'react';
-import { db } from "../firebase/firebaseConfig";
-import { collection, onSnapshot } from "firebase/firestore";
+import { useState } from 'react';
 import Boton from '../Elementos/Boton';
 import { Input } from '../Elementos/Input';
 import { Formulario, InputContenedor, Label } from '../Elementos/Formulario';
@@ -13,71 +12,64 @@ import { Helmet } from 'react-helmet-async';
 
 const InicioSesion = () => {
     const navigate = useNavigate();
-    const [usuarios, setUsuarios] = useState([]);
-    const [nombre, setNombre] = useState('');
+    const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
     const [estadoAlerta, cambiarEstadoAlerta] = useState(false);
     const [alerta, cambiarAlerta] = useState({});
 
-
-    //traer datos de usuarios de base de datos
-    useEffect(() => {
-        onSnapshot(collection(db, 'usuarios'),
-            (snapshot) => {
-
-                const arreglo = snapshot.docs.map((usuario) => {
-                    return (
-                        { ...usuario.data(), id: usuario.id }
-                    );
-
-                });
-                setUsuarios(arreglo);
-            })
-    }, []);
-
     //funcion de inicio de sesion
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-
         cambiarEstadoAlerta(false);
         cambiarAlerta({});
 
-        if (nombre === '' || password === '') {
+        if (correo === '' || password === '') {
             cambiarEstadoAlerta(true);
-            cambiarAlerta({
-                tipo: "error",
-                mensaje: "Todos los campos son obligatorios"
-            });
+            cambiarAlerta({ tipo: "error", mensaje: "Todos los campos son obligatorios" });
             return;
         }
 
-
-
-        const usuarioLogueado = usuarios.find((u) => u.nombre === nombre && u.password === password);
-
-        if (usuarioLogueado) {
+        //comprobar correo valido
+        const expresionRegular = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+        const correoLimpio = correo.trim().toLowerCase();
+        if (!expresionRegular.test(correoLimpio)) {
             cambiarEstadoAlerta(true);
-            cambiarAlerta({
-                tipo: "exito",
-                mensaje: "Inicio de sesión exitoso"
-            });
+            cambiarAlerta({ tipo: "error", mensaje: "Correo electronico no valido" });
+            return;
+        }
 
-            //redireccion a la pagina principal
-            setTimeout(() => {
-                navigate('/');
-            }, 1000);
+        //validar contraseña 
+        if (password.length < 6) {
+            cambiarEstadoAlerta(true);
+            cambiarAlerta({ tipo: "error", mensaje: "La contraseña debe tener al menos 6 caracteres" });
+            return;
+        }
 
-            //limpiar los campos si hay inicio exitoso
-            setNombre('');
+        try {
+            await signInWithEmailAndPassword(auth, correo, password);
+            cambiarEstadoAlerta(true);
+            cambiarAlerta({ tipo: "exito", mensaje: "Inicio de sesión exitoso" });
+
+            setCorreo('');
             setPassword('');
 
-        } else {
+            setTimeout(() => {
+                navigate('/');
+            }, 1500);
+
+        } catch (error) {
             cambiarEstadoAlerta(true);
-            cambiarAlerta({
-                tipo: "error",
-                mensaje: "Usuario o contraseña incorrectos"
-            });
-        }//if else inicio sesion 
+
+            if (error.code === 'auth/too-many-requests') {
+                cambiarAlerta({ tipo: "error", mensaje: "Demasiados intentos fallidos. Intenta más tarde." });
+            } else if (error.code === 'auth/user-disabled') {
+                cambiarAlerta({ tipo: "error", mensaje: "Esta cuenta ha sido deshabilitada." });
+            } else if (error.code === 'auth/network-request-failed') {
+                cambiarAlerta({ tipo: "error", mensaje: "Error de conexión. Verifica tu internet." });
+            } else {
+                cambiarAlerta({ tipo: "error", mensaje: "Usuario o contraseña incorrectos" });
+            }
+        }
 
     }//fin de handlelogin 
 
@@ -91,14 +83,14 @@ const InicioSesion = () => {
 
                 <Formulario onSubmit={handleLogin}>
                     <InputContenedor>
-                        <Label htmlFor="nombre">Usuario: </Label>
+                        <Label htmlFor="correo">Correo: </Label>
                         <Input
-                            type="text"
-                            name="nombre"
-                            id="nombre"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
-                            placeholder="Ej. Jair" />
+                            type="email"
+                            name="correo"
+                            id="correo"
+                            value={correo}
+                            onChange={(e) => setCorreo(e.target.value)}
+                            placeholder="Ej. ejemplo@gmail.com" />
                     </InputContenedor>
 
                     <InputContenedor>

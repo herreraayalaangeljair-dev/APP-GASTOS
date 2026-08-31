@@ -1,5 +1,6 @@
 import Contenedor from "./Elementos/Contenedor";
 import { Helmet } from "react-helmet-async";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useState } from 'react'
 import styled from "styled-components";
 import { Routes, Route, NavLink } from "react-router";
@@ -11,31 +12,25 @@ import CategoriaGastos from "./Componentes/CategoriaGastos";
 import Logo from "./Imagenes/icono.svg"
 import SidebarMenu from "./Componentes/SideBarMenu";
 //para sacar elementos de la base de datos
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "./firebase/firebaseConfig";
 import { useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleUser, faBars } from "@fortawesome/free-solid-svg-icons";
 
 const App = () => {
 
-  const [usuarios, setUsuarios] = useState([]);
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [usuarioActual, setUsuarioActual] = useState(null);
 
 
   useEffect(() => {
-    onSnapshot(collection(db, 'usuarios'),
-      (snapshot) => {
 
-        const arreglo = snapshot.docs.map((usuario) => {
-          return (
-            { ...usuario.data(), id: usuario.id }
-          );
+    const auth = getAuth();
+    const calcelarSuscribpcion = onAuthStateChanged(auth, (user) => {
+      setUsuarioActual(user);
+    });
 
-        });
-        setUsuarios(arreglo);
+    return calcelarSuscribpcion;
 
-      })
   }, []);
 
 
@@ -58,15 +53,23 @@ const App = () => {
               <FontAwesomeIcon icon={faBars} />
             </MenuHambirguesa>
 
+
+
             <nav>
               <NavLink to="/inicio-sesion">
-                {
-                  usuarios.map((usuario) => (
-                    <p key={usuario.id}>
+                {usuarioActual
+                  ? (
+                    <p>
                       <FontAwesomeIcon icon={faCircleUser} />
-                      {usuario.nombre}
+                      {usuarioActual.displayName}
                     </p>
-                  ))
+                  )
+                  : (
+                    <NavLink to="/inicio-sesion">
+                      <FontAwesomeIcon icon={faCircleUser} />
+                      Iniciar Sesión
+                    </NavLink>
+                  )
                 }
               </NavLink>
             </nav>

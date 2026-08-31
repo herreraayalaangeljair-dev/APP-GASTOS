@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { Helmet } from 'react-helmet-async';
 import { auth } from '../firebase/firebaseConfig';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import Alertas from './Alertas';
 
 
@@ -53,6 +53,36 @@ const Registro = () => {
             return;
         }
 
+
+        //validar contraseña 
+        if (password.length < 6) {
+            cambiarEstadoAlerta(true);
+            cambiarAlerta({ tipo: "error", mensaje: "La contraseña debe tener al menos 6 caracteres" });
+            return;
+        }
+
+        const tieneNumero = /\d/.test(password);
+        const tieneLetra = /[a-zA-Z]/.test(password);
+        if (!tieneNumero || !tieneLetra) {
+            cambiarEstadoAlerta(true);
+            cambiarAlerta({ tipo: "error", mensaje: "La contraseña debe incluir letras y números" });
+            return;
+        }
+
+        //validar nombre de usuario
+        if (nombre.trim().length < 3 || nombre.length > 30) {
+            cambiarEstadoAlerta(true);
+            cambiarAlerta({ tipo: "error", mensaje: "El usuario debe tener entre 3 y 30 caracteres" });
+            return;
+        }
+
+        const nombreValido = /^[a-zA-Z0-9_.]+$/.test(nombre);
+        if (!nombreValido) {
+            cambiarEstadoAlerta(true);
+            cambiarAlerta({ tipo: "error", mensaje: "El usuario solo puede contener letras, números, puntos y guiones bajos" });
+            return;
+        }
+
         //No repetir nombre de usuario
         const consulta = await getDocs(query(collection(db, 'usuarios')));
 
@@ -68,14 +98,20 @@ const Registro = () => {
 
         //Aqui es donde se mandan los datos a firebase
         try {
-            //Autenticar email
-            await createUserWithEmailAndPassword(auth, email, password);
+            //Autenticar email esto va a autenticacion
+            const credencialesUsuario = await createUserWithEmailAndPassword(auth, email, password);
 
-            // agregar los datos a la base de datos
+            //nombre de usuario esto va a autenticacion
+            await updateProfile(credencialesUsuario.user, {
+                displayName: nombre
+            });
+
+            // agregar los datos a la base de datos firestore
             await addDoc(collection(db, 'usuarios'), {
                 nombre: nombre,
                 email: email,
-                password: password
+                uid: credencialesUsuario.user.uid,
+                fechaRegistro: new Date()
             });
 
             cambiarEstadoAlerta(true);
@@ -96,13 +132,19 @@ const Registro = () => {
 
         } catch (error) {
             cambiarEstadoAlerta(true);
-            cambiarAlerta({
-                tipo: "error",
-                mensaje: "Error al registrar: " + error.message
-            });
-            console.log(error);
-        }
 
+            if (error.code === 'auth/email-already-in-use') {
+                cambiarAlerta({ tipo: "error", mensaje: "Este correo ya está registrado" });
+            } else if (error.code === 'auth/weak-password') {
+                cambiarAlerta({ tipo: "error", mensaje: "La contraseña es demasiado débil" });
+            } else if (error.code === 'auth/invalid-email') {
+                cambiarAlerta({ tipo: "error", mensaje: "El correo no es válido" });
+            } else {
+                cambiarAlerta({ tipo: "error", mensaje: "No se pudo completar el registro. Intenta de nuevo." });
+            }
+            console.log(error);
+
+        }
     }
 
     return (
