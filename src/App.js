@@ -1,6 +1,5 @@
 import Contenedor from "./Elementos/Contenedor";
 import { Helmet } from "react-helmet-async";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useState } from 'react'
 import styled from "styled-components";
 import { Routes, Route, NavLink } from "react-router";
@@ -12,26 +11,17 @@ import CategoriaGastos from "./Componentes/CategoriaGastos";
 import Logo from "./Imagenes/icono.svg"
 import SidebarMenu from "./Componentes/SideBarMenu";
 //para sacar elementos de la base de datos
-import { useEffect } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleUser, faBars } from "@fortawesome/free-solid-svg-icons";
+import RutaProtegida from "./Componentes/RutaProtegida";
+import { useAuth } from "./Contextos/Authcontext";
+
 
 const App = () => {
 
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const [usuarioActual, setUsuarioActual] = useState(null);
+  const { usuario } = useAuth();
 
-
-  useEffect(() => {
-
-    const auth = getAuth();
-    const calcelarSuscribpcion = onAuthStateChanged(auth, (user) => {
-      setUsuarioActual(user);
-    });
-
-    return calcelarSuscribpcion;
-
-  }, []);
 
 
   return (
@@ -57,11 +47,11 @@ const App = () => {
 
             <nav>
               <NavLink to="/inicio-sesion">
-                {usuarioActual
+                {usuario
                   ? (
                     <p>
                       <FontAwesomeIcon icon={faCircleUser} />
-                      {usuarioActual.displayName}
+                      {usuario.displayName}
                     </p>
                   )
                   : (
@@ -81,14 +71,32 @@ const App = () => {
         {/*para mostrar el menu lateral*/}
         {menuAbierto && <SidebarMenu cerrarMenu={() => setMenuAbierto(false)} />}
 
+        {/*Proteger rutas */}
         <Contenedor>
           <div className="listado-gastos">
             <Routes>
-              <Route path="/" element={<ListaGastos />} />
+
+              <Route path="/" element={
+                <RutaProtegida>
+                  <ListaGastos />
+                </RutaProtegida>
+              } />
+
               <Route path="/inicio-sesion" element={<InicioSesion />} />
               <Route path="/registro" element={<Registro />} />
-              <Route path="/editar/:id" element={<EditarGasto />} />
-              <Route path="/categoria" element={<CategoriaGastos />} />
+
+              <Route path="/editar/:id" element={
+                <RutaProtegida>
+                  <EditarGasto />
+                </RutaProtegida>
+              } />
+
+              <Route path="/categoria" element={
+                <RutaProtegida>
+                  <CategoriaGastos />
+                </RutaProtegida>
+              } />
+
             </Routes>
           </div>
         </Contenedor>
