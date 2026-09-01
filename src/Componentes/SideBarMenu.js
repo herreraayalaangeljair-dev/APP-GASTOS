@@ -1,42 +1,56 @@
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../Contextos/Authcontext';
 
 const SideBarMenu = ({ cerrarMenu }) => {
-    return (
-        <>
 
-            <Overlay onClick={cerrarMenu} />
+  const { logout } = useAuth();
 
-            <Contenedor>
-
-                <BotonCerrar onClick={cerrarMenu}>
-                    <FontAwesomeIcon icon={faXmark} />
-                </BotonCerrar>
-
-                <Titulo>Ir a</Titulo>
-                <Opcion>Inicio</Opcion>
-                <Opcion>Lista de gastos</Opcion>
+  const handleCerrarSesion = async () => {
+    try {
+      await logout();
+      cerrarMenu()
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
 
-                <Separador />
 
-                <Titulo>Gastos por categoría</Titulo>
-                <Opcion>Hogar</Opcion>
-                <Opcion>Transporte</Opcion>
-                <Opcion>Comida</Opcion>
-                <Opcion>Servicios</Opcion>
-                <Opcion>Ocio</Opcion>
-                <Opcion>Otros</Opcion>
+  return (
+    <>
+      <Overlay onClick={cerrarMenu} />
 
-                <Separador />
+      <Contenedor>
 
-                <Titulo>Ayuda y configuración</Titulo>
-                <Opcion>Mi cuenta</Opcion>
-                <Opcion>Cerrar sesión</Opcion>
-            </Contenedor>
-        </>
-    );
+        <BotonCerrar onClick={cerrarMenu}>
+          <FontAwesomeIcon icon={faXmark} />
+        </BotonCerrar>
+
+        <Titulo>Ir a</Titulo>
+        <Opcion>Inicio</Opcion>
+        <Opcion>Lista de gastos</Opcion>
+
+
+        <Separador />
+
+        <Titulo>Gastos por categoría</Titulo>
+        <Opcion>Hogar</Opcion>
+        <Opcion>Transporte</Opcion>
+        <Opcion>Comida</Opcion>
+        <Opcion>Servicios</Opcion>
+        <Opcion>Ocio</Opcion>
+        <Opcion>Otros</Opcion>
+
+        <Separador />
+
+        <Titulo>Ayuda y configuración</Titulo>
+        <Opcion>Mi cuenta</Opcion>
+        <Opcion onClick={handleCerrarSesion}>Cerrar sesión</Opcion>
+      </Contenedor>
+    </>
+  );
 };
 
 
